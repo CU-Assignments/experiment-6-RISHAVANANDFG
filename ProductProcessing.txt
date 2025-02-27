@@ -1,0 +1,59 @@
+import java.util.*;
+import java.util.stream.Collectors;
+
+class Product {
+    String name;
+    String category;
+    double price;
+
+    public Product(String name, String category, double price) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return name + " ($" + price + ")";
+    }
+}
+
+public class ProductProcessing {
+    public static void main(String[] args) {
+        List<Product> products = Arrays.asList(
+            new Product("Laptop", "Electronics", 1200),
+            new Product("Phone", "Electronics", 800),
+            new Product("TV", "Electronics", 1500),
+            new Product("Shirt", "Clothing", 50),
+            new Product("Jeans", "Clothing", 80),
+            new Product("Blender", "Home Appliance", 100),
+            new Product("Oven", "Home Appliance", 300)
+        );
+
+        // Grouping products by category
+        Map<String, List<Product>> groupedByCategory = products.stream()
+            .collect(Collectors.groupingBy(p -> p.category));
+
+        // Finding the most expensive product in each category
+        Map<String, Optional<Product>> mostExpensiveByCategory = products.stream()
+            .collect(Collectors.groupingBy(p -> p.category,
+                Collectors.maxBy(Comparator.comparingDouble(p -> p.price))));
+
+        // Calculating the average price of all products
+        double averagePrice = products.stream()
+            .mapToDouble(p -> p.price)
+            .average()
+            .orElse(0);
+
+        // Display results
+        System.out.println("Products Grouped by Category:");
+        groupedByCategory.forEach((category, prodList) -> 
+            System.out.println(category + ": " + prodList));
+
+        System.out.println("\nMost Expensive Product in Each Category:");
+        mostExpensiveByCategory.forEach((category, prod) -> 
+            System.out.println(category + ": " + prod.orElse(null)));
+
+        System.out.println("\nAverage Price of All Products: $" + averagePrice);
+    }
+}
